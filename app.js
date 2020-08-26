@@ -9,6 +9,10 @@ const twit    = require('twit')({
 const svg2      = require('oslllo-svg2');
 const cron      = require('node-cron');
 const wordcloud = require('./wordCloud.js');
+const teams = [
+  "baystars", "giants", "tigers", "swallows", "dragons", "carp", 
+  "hawks", "lions", "buffaloes", "eagles", "fighters", "marines"
+];
 
 // twitterストリーミングエンドポイントとの接続
 const stream = twit.stream('statuses/filter',
@@ -29,40 +33,44 @@ stream.on('tweet', (tweet) => {
 const cloud = new wordcloud.wordCloud();
 
 // ある時間にcron_botでWC生成＆ツイート
-cron.schedule('*/10 * * * * *', () => { // 10秒おきに実行
+//cron.schedule('*/10 * * * * *', () => { // 10秒おきに実行
+cron.schedule('0 0 9,18,23 * * *', () => { // 9時、18時、23時に実行
 
   // SVG取得
   cloud.getSvg(require('./storing.js').getCount("all")).then((svg) => {
     console.log("YUKI.N > successful get SVG.");
-    console.log(svg);
     
     // svg -> base64変換
     svg2(svg).toUri({ base64: true, mime: svg2.PNG }).then((uri) => {
+    //svg2(svg).jpeg().toFile("./test.jpeg").then((uri) => {
       //console.log(uri); // iVBORw0KGgoAAAANSUhEUgAAADAAAAA...
+      console.log("YUKI.N > -----------------------------------------")
       console.log("YUKI.N > successful svg2base64 conversion.");
-
+      console.log("YUKI.N > -----------------------------------------")
       // twitter投稿
       // 1. 画像アップロード(base64)
       twit.post('media/upload', { media_data: uri }, function (err, data, response) {
-
-        // 2. 画像メタデータ設定
-        var mediaIdStr = data.media_id_string
-        var altText = "wordcloud by suibari"
-        var meta_params = { media_id: mediaIdStr, alt_text: { text: altText } }
-        twit.post('media/metadata/create', meta_params, function (err, data, response) {
+        
+        // 2. 画像付きツイート
+        let text = "NPBライブクラウドbotがお知らせします。\n" +
+                   "各球団で盛り上がっているワードは以下です。\n";
+        teams.forEach((team) => {
+          let count = require('./storing.js').getCount(team);
+          if (count.length > 0) {
+            text += "#" + team + " :" + count[count.length - 1].word + "\n";
+          }
+        });
+        text += "\n"+
+                "URL: https://npb-livecloud.herokuapp.com/";
+        console.log(text);
+        var params = { status: text, media_ids: [data.media_id_string] }
+        twit.post('statuses/update', params, function (err, data, response) {
           if (!err) {
-
-            // 3. 画像付きツイート
-            var params = { status: 'test', media_ids: [mediaIdStr] }
-            twit.post('statuses/update', params, function (err, data, response) {
-              if (!err) {
-                console.log("YUKI.N > =====================================")
-                console.log("YUKI.N > successsful post to Twitter.")
-                console.log("YUKI.N > =====================================")
-              } else {
-                console.error(response)
-              }
-            });
+            console.log("YUKI.N > =====================================")
+            console.log("YUKI.N > successsful post to Twitter.")
+            console.log("YUKI.N > =====================================")
+          } else {
+            console.error(response)
           }
         });
       });

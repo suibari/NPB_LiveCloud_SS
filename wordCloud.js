@@ -55,8 +55,6 @@ class wordCloud {
       //.transition().duration(600)
       .style('paint-order', 'stroke')
       .style('fill', (d) => { return d.color })            // 新しい単語を球団カラーで塗りつぶす
-      .style('stroke-width', (d) => { if ((d.team=="tigers")||(d.team=="lions")) return d.size/12+'px' }) // 阪神or西武の場合、文字色だけだとみづらいので黒で縁取り(フチのサイズ)
-      .style('stroke',       (d) => { if ((d.team=="tigers")||(d.team=="lions")) return "#000" })         // 同上(フチの色)
       .text((d) => { return d.text; })                     // 単語全てにテキスト設定
       .style("font-family", "Kazesawa-Regular")            // フォントを設定
       .style("font-size", (d) => { return d.size + "px" }) // 単語全てにサイズ設定
@@ -69,7 +67,7 @@ class wordCloud {
   _getWords(data) {
     var countMax   = d3.max(data, (d) => {return d.count});
     var countMin   = d3.min(data, (d) => {return d.count});
-    var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([10, 60]); //ログスケール
+    var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([15, 70]); //ログスケール
     var colorScale = function(t){
       switch(t) {
         case "baystars":  return d3.color("dodgerblue");
