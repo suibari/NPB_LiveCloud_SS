@@ -1,6 +1,6 @@
 'use strict';
 
-const Canvas    = require('canvas');
+const {createCanvas} = require('canvas');
 const d3cloud   = require('d3-cloud');
 const d3        = require('d3');
 const {JSDOM}   = require('jsdom');
@@ -30,7 +30,7 @@ class wordCloud {
   async getSvg(words) {
     let startDraw = function(func1, func2) { 
       d3cloud()
-      .canvas(() => { return new Canvas.createCanvas(1000, 1000) })
+      .canvas(() => createCanvas(1000, 1000) )   // new Canvas.createCanvasだとエラー！
       .size([1000, 1000])
       .words(func1)              // words配列を_drawに渡す
       .font("Kazesawa-Regular")                  // フォントを設定
