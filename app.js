@@ -14,8 +14,6 @@ SegfaultHandler.registerHandler('crash.log')
 const WORDS_LENGTH = 200;
 
 // wordCloud描画インスタンス作成
-console.log("YUKI.N > =====================================")
-console.log("YUKI.N > 1. generating wordcloud...");
 const cloud = new wordcloud.wordCloud();
 
 // ある時間にcron_botでWC生成＆ツイート
@@ -23,24 +21,29 @@ const cloud = new wordcloud.wordCloud();
 //cron.schedule('0 0 9,18,23 * * *', () => { // 9時、18時、23時に実行
 
 // SVG取得
+console.log("YUKI.N > =====================================")
+console.log("YUKI.N > 1. connecting redis...");
 require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => { 
-  console.log("YUKI.N > -------------------------------------")
-  console.log("YUKI.N > 2. successful get " + words.length + " record from redis.");
+  console.log("YUKI.N >    successful to get record from redis...");
   console.log("            maximum word size: " + words[0].count);
   console.log("            minimum word size: " + words[WORDS_LENGTH-1].count);
+  console.log(words);
 
-  console.log("YUKI.N > -------------------------------------")
+  console.log("YUKI.N > -------------------------------------");
+  console.log("YUKI.N > 2. generating wordcloud from record...");
   cloud.getSvg(words).then((svg) => {
-    console.log("YUKI.N > 3. successful get SVG.");
+    console.log("YUKI.N >    successful to generate wordcloud(SVG).");
     
     // svg -> base64変換
+    console.log("YUKI.N > -------------------------------------");
+    console.log("YUKI.N > 3. converting svg to base64...");
     svg2(svg).toUri({ base64: true, mime: svg2.PNG }).then((uri) => {
-      console.log("YUKI.N > -------------------------------------")
-      console.log("YUKI.N > 4. successful SVG -> base64 conversion.");
+      console.log("YUKI.N >    successful conversion.");
 
       // twitter投稿
       // 1. 画像アップロード(base64)
-      console.log("YUKI.N > -------------------------------------")
+      console.log("YUKI.N > -------------------------------------");
+      console.log("YUKI.N > 4. attempt to post to Twitter.");
       twit.post('media/upload', { media_data: uri }, function (err, data, response) {
         
         // 2. 画像付きツイート
@@ -56,7 +59,7 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => {
 
         twit.post('statuses/update', params, function (err, data, response) {
           if (!err) {
-            console.log("YUKI.N > 5. successsful post to Twitter.");
+            console.log("YUKI.N >    successsful to post to Twitter.");
             console.log("YUKI.N > =====================================");
             process.exit(1);
           } else {

@@ -4,13 +4,17 @@ const {createCanvas} = require('canvas');
 const d3cloud   = require('d3-cloud');
 const d3        = require('d3');
 const {JSDOM}   = require('jsdom');
+
+const WIDTH  = 1500;
+const HEIGHT = 1500;
+
 let   doc       = new JSDOM ( // DOM生成
   `<!DOCTYPE html>
     <head>
     </head>
     <body>
-      <svg width="1000" height="1000" viewbox="0 0 1000 1000">
-        <g transform="translate(500,500)">
+      <svg width="`+WIDTH+`" height="`+HEIGHT+`" viewbox="0 0 `+WIDTH+` `+HEIGHT+`">
+        <g transform="translate(`+WIDTH/2+`,`+HEIGHT/2+`)">
         </g>
       </svg>
     </body>`,
@@ -30,8 +34,8 @@ class wordCloud {
   async getSvg(words) {
     let startDraw = function(func1, func2) { 
       d3cloud()
-      .canvas(() => createCanvas(1000, 1000) )   // new Canvas.createCanvasだとエラー！
-      .size([1000, 1000])
+      .canvas(() => createCanvas(WIDTH, HEIGHT) ) // new Canvas.createCanvasだとエラー！
+      .size([WIDTH, HEIGHT])
       .words(func1)                              // words配列を_drawに渡す
       .font("Kazesawa-Regular")                  // フォントを設定
       .fontSize((d) => { return d.size })        // フォントサイズを設定
@@ -88,7 +92,7 @@ class wordCloud {
     return data.map( function(d) {
       return {
         text:  d.word, 
-        size:  sizeScale(d.count),
+        size:  (sizeScale(d.count)>=0)?sizeScale(d.count):0, // Pango-CRITICAL **: assertion 'size >= 0' failed 対策
         color: colorScale(d.team),
         team:  d.team
       }
