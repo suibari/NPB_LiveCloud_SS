@@ -19,10 +19,8 @@
     "ioredis": "^4.19.4",
     "jsdom": "^16.4.0",
     "node-cron": "^2.0.3",
-    "oslllo-svg2": "0.0.1",
-    "puppeteer": "^5.5.0",
+    "oslllo-svg2": "^0.2.2",
     "segfault-handler": "^1.3.0",
-    "socket.io": "^2.4.1",
     "twit": "^2.2.11",
     "whatwg-url": "^8.4.0"
   }

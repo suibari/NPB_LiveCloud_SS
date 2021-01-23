@@ -32,12 +32,12 @@ class wordCloud {
       d3cloud()
       .canvas(() => createCanvas(1000, 1000) )   // new Canvas.createCanvasだとエラー！
       .size([1000, 1000])
-      .words(func1)              // words配列を_drawに渡す
+      .words(func1)                              // words配列を_drawに渡す
       .font("Kazesawa-Regular")                  // フォントを設定
       .fontSize((d) => { return d.size })        // フォントサイズを設定
       .rotate(() => { return 0 })                // 回転なしを設定
       .padding(4)                                // ワードクラウド文字間隔を拡大(defaultは1)
-      .on("end", func2) // layoutが全ての単語の配置を完了したら、_draw関数を実行する
+      .on("end", func2)                          // layoutが全ての単語の配置を完了したら、_draw関数を実行する
       .start();                                  // _draw関数の実行
     }
 
@@ -67,7 +67,7 @@ class wordCloud {
   _getWords(data) {
     var countMax   = d3.max(data, (d) => {return d.count});
     var countMin   = d3.min(data, (d) => {return d.count});
-    var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([15, 70]); //ログスケール
+    var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([25, 70]); //ログスケール
     var colorScale = function(t){
       switch(t) {
         case "baystars":  return d3.color("dodgerblue");
