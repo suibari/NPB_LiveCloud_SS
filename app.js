@@ -13,9 +13,6 @@ SegfaultHandler.registerHandler('crash.log')
 
 const WORDS_LENGTH = 200;
 
-// wordCloud描画インスタンス作成
-const cloud = new wordcloud.wordCloud();
-
 // ある時間にcron_botでWC生成＆ツイート
 //cron.schedule('*/30 * * * * *', () => { // 10秒おきに実行
 //cron.schedule('0 0 9,18,23 * * *', () => { // 9時、18時、23時に実行
@@ -31,7 +28,8 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => {
 
   console.log("YUKI.N > -------------------------------------");
   console.log("YUKI.N > 2. generating wordcloud from record...");
-  cloud.getSvg(words).then((svg) => {
+  require('./wordCloud.js').getWordCloud(words).then((svg) => {
+    console.log(svg);
     console.log("YUKI.N >    successful to generate wordcloud(SVG).");
     
     // svg -> base64変換
