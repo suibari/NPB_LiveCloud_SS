@@ -23,7 +23,8 @@ console.log("YUKI.N > 1. connecting redis...");
 require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => { 
   console.log("YUKI.N >    successful to get record from redis...");
   console.log("            maximum word size: " + words[0].count);
-  console.log("            minimum word size: " + words[WORDS_LENGTH-1].count);
+  const min_word_size = (words.length >= WORDS_LENGTH)? words[WORDS_LENGTH-1].count : words.length-1;
+  console.log("            minimum word size: " + min_word_size);
   console.log(words);
 
   console.log("YUKI.N > -------------------------------------");
@@ -45,12 +46,15 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => {
       twit.post('media/upload', { media_data: uri }, function (err, data, response) {
         
         // 2. 画像付きツイート
+        const idx_first  = 0;
+        const idx_second = words.findIndex(word => (word.team != words[idx_first].team));
+        const idx_third  = words.findIndex(word => (word.team != words[idx_first].team) && (word.team != words[idx_second].team));
         const now = new Date();
         var text = "suibariさんちのラズパイです🥺("+now.toFormat('YYYY/M/D HH24時MI分')+")\n"+
                    "ここ6時間の球界の話題は、"+
-                   "#" + words[0].team + " の「" + words[0].word + "」、"+
-                   "#" + words[1].team + " の「" + words[1].word + "」、"+
-                   "#" + words[2].team + " の「" + words[2].word + "」などでした。\n";
+                   "#" + words[idx_first].team  + " の「" + words[idx_first].word  + "」、"+
+                   "#" + words[idx_second].team + " の「" + words[idx_second].word + "」、"+
+                   "#" + words[idx_third].team  + " の「" + words[idx_third].word  + "」などでした。\n";
         text += "URL: https://npb-livecloud.herokuapp.com/";
         console.log(text);
         var params = { status: text, media_ids: [data.media_id_string] }
