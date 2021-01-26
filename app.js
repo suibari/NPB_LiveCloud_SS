@@ -7,7 +7,6 @@ const twit    = require('twit')({
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 const svg2      = require('oslllo-svg2');
-const wordcloud = require('./wordCloud.js');
 const SegfaultHandler = require('segfault-handler');
 SegfaultHandler.registerHandler('crash.log')
 require('date-utils');
@@ -47,18 +46,13 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => {
         
         // 2. 画像付きツイート
         const now = new Date();
-        var text = "suibariさんちのラズパイです。🥺("+now.toFormat('YYYY/M/D H時MI分')+")\n"+
+        var text = "suibariさんちのラズパイです🥺("+now.toFormat('YYYY/M/D HH24時MI分')+")\n"+
                    "ここ6時間の球界の話題は、"+
                    "#" + words[0].team + " の「" + words[0].word + "」、"+
                    "#" + words[1].team + " の「" + words[1].word + "」、"+
                    "#" + words[2].team + " の「" + words[2].word + "」などでした。\n";
-        //teams.forEach( async (team) => {
-        //  await require('./redis_wrap.js').getCount(team, 1).then((count_team) => {
-        //    text += "#" + team + " :" + count_team[0].word + "\n";
-        //  });
-        //});
         text += "URL: https://npb-livecloud.herokuapp.com/";
-        //console.log(text);
+        console.log(text);
         var params = { status: text, media_ids: [data.media_id_string] }
 
         twit.post('statuses/update', params, function (err, data, response) {
