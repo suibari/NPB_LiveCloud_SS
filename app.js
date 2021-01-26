@@ -62,6 +62,7 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => {
         twit.post('statuses/update', params, function (err, data, response) {
           if (!err) {
             console.log("YUKI.N >    successsful to post to Twitter.");
+            require('./redis_wrap.js').init();
             console.log("YUKI.N > =====================================");
             process.exit(1);
           } else {

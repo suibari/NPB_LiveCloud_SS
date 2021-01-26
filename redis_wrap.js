@@ -48,6 +48,10 @@ module.exports.getTPS = function () {
   })
 };
 
+module.exports.init = function () {
+  redis.flushall().then(console.log("YUKI.N > successful to reflesh redis."));
+}
+
 // redisのresultを変換する関数
 function convertRedisArr (arr) {   // ex.) [0, 1, 2, 3, ...]
   let res  = [];
