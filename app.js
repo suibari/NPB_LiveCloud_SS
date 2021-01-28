@@ -54,8 +54,8 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => {
                    "ここ6時間の球界の話題は、"+
                    "#" + words[idx_first].team  + " の「" + words[idx_first].word  + "」、"+
                    "#" + words[idx_second].team + " の「" + words[idx_second].word + "」、"+
-                   "#" + words[idx_third].team  + " の「" + words[idx_third].word  + "」などでした。\n";
-        text += "URL: https://npb-livecloud.herokuapp.com/";
+                   "#" + words[idx_third].team  + " の「" + words[idx_third].word  + "」などでした。 #npb\n";
+        text += "URL: https://npb-livecloud.herokuapp.com/\n";
         console.log(text);
         var params = { status: text, media_ids: [data.media_id_string] }
 

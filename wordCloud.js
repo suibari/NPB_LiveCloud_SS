@@ -66,7 +66,7 @@ function _getWords(data) {
   //var countMin   = d3.min(arr_count);
   var countMax   = Math.max.apply(null, arr_count); // d3.maxの挙動がおかしいので
   var countMin   = Math.min.apply(null, arr_count); // d3.minの挙動がry
-  var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([10, 120]); //ログスケール
+  var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([10, countMax/30]); //ログスケール
   var colorScale = function(t){
     switch(t) {
       case "baystars":  return d3.color("dodgerblue");
