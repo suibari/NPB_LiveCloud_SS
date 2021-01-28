@@ -5,8 +5,8 @@ const d3cloud   = require('d3-cloud');
 const d3        = require('d3');
 const {JSDOM}   = require('jsdom');
 
-const WIDTH  = 1500;
-const HEIGHT = 1500;
+const WIDTH  = 2000;
+const HEIGHT = 2000;
 
 let   document = new JSDOM ( // DOM生成
   `<body></body>`,
@@ -66,7 +66,7 @@ function _getWords(data) {
   //var countMin   = d3.min(arr_count);
   var countMax   = Math.max.apply(null, arr_count); // d3.maxの挙動がおかしいので
   var countMin   = Math.min.apply(null, arr_count); // d3.minの挙動がry
-  var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([25, 80]); //ログスケール
+  var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([10, 120]); //ログスケール
   var colorScale = function(t){
     switch(t) {
       case "baystars":  return d3.color("dodgerblue");

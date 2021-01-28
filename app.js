@@ -11,7 +11,7 @@ const SegfaultHandler = require('segfault-handler');
 SegfaultHandler.registerHandler('crash.log')
 require('date-utils');
 
-const WORDS_LENGTH = 200;
+const WORDS_LENGTH = 300;
 
 // ある時間にcron_botでWC生成＆ツイート
 //cron.schedule('*/30 * * * * *', () => { // 10秒おきに実行
