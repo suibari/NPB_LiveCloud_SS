@@ -66,7 +66,8 @@ function _getWords(data) {
   //var countMin   = d3.min(arr_count);
   var countMax   = Math.max.apply(null, arr_count); // d3.maxの挙動がおかしいので
   var countMin   = Math.min.apply(null, arr_count); // d3.minの挙動がry
-  var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([10, countMax/30]); //ログスケール
+  var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([10, 150]).clamp(true); //ログスケール
+  //var sizeScale  = d3.scaleLinear().domain([countMin, countMax]).range([20, 150]); //リニアスケール
   var colorScale = function(t){
     switch(t) {
       case "baystars":  return d3.color("dodgerblue");
@@ -87,7 +88,7 @@ function _getWords(data) {
   return data.map( function(d) {
     return {
       text:  d.word, 
-      size:  (sizeScale(d.count)>=0)?sizeScale(d.count):0, // Pango-CRITICAL **: assertion 'size >= 0' failed 対策
+      size:  sizeScale(d.count), // Pango-CRITICAL **: assertion 'size >= 0' failed 対策
       color: colorScale(d.team),
       team:  d.team
     }
