@@ -50,11 +50,11 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => {
         const idx_second = words.findIndex(word => (word.team != words[idx_first].team));
         const idx_third  = words.findIndex(word => (word.team != words[idx_first].team) && (word.team != words[idx_second].team));
         const now = new Date();
-        var text = "suibariさんちのラズパイです🥺("+now.toFormat('YYYY/M/D HH24時MI分')+")\n"+
+        var text = "suibariさんちのラズパイです🥺("+now.toFormat('YYYY/M/D HH24時MI分')+") \n"+
                    "ここ6時間の球界の話題は、"+
-                   "#" + words[idx_first].team  + " の「" + words[idx_first].word  + "」、"+
-                   "#" + words[idx_second].team + " の「" + words[idx_second].word + "」、"+
-                   "#" + words[idx_third].team  + " の「" + words[idx_third].word  + "」などでした。 #npb\n";
+                   "#" + words[idx_first].team  + " の「" + words[idx_first].word  + "」で"+words[idx_first].count+"回つぶやかれました。"+
+                   "ほか #" + words[idx_second].team + " の「" + words[idx_second].word + "」、"+
+                   "#" + words[idx_third].team  + " の「" + words[idx_third].word  + "」などが人気でした。#npb\n";
         text += "URL: https://npb-livecloud.herokuapp.com/\n";
         console.log(text);
         var params = { status: text, media_ids: [data.media_id_string] }

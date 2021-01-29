@@ -88,7 +88,7 @@ function _getWords(data) {
   return data.map( function(d) {
     return {
       text:  d.word, 
-      size:  sizeScale(d.count), // Pango-CRITICAL **: assertion 'size >= 0' failed 対策
+      size:  sizeScale(d.count),
       color: colorScale(d.team),
       team:  d.team
     }
