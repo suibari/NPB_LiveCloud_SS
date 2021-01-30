@@ -56,6 +56,10 @@ module.exports.initAndSetTimeStamp = function () {
   console.log("YUKI.N > successful to reflesh redis, and set timestamp.");
 }
 
+module.exports.getTimeStamp = async function () {
+  return redis.get("last_changed_date");
+}
+
 // redisのresultを変換する関数
 function convertRedisArr (arr) {   // ex.) [0, 1, 2, 3, ...]
   let res  = [];
