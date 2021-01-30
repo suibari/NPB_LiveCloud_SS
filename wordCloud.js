@@ -66,7 +66,10 @@ function _getWords(data) {
   //var countMin   = d3.min(arr_count);
   var countMax   = Math.max.apply(null, arr_count); // d3.maxの挙動がおかしいので
   var countMin   = Math.min.apply(null, arr_count); // d3.minの挙動がry
-  var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([10, 150]).clamp(true); //ログスケール
+  var f_range    = (x) => {return ((x+4000)/60)}; //countMax=2000の時100、countMax=5000の時150をとる
+  var rangeMax   = (f_range(countMax) < 100)? 100 :
+                   (f_range(countMax) < 150)? 150 : f_range(countMax); 
+  var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([10, rangeMax]).clamp(true); //ログスケール
   //var sizeScale  = d3.scaleLinear().domain([countMin, countMax]).range([20, 150]); //リニアスケール
   var colorScale = function(t){
     switch(t) {
