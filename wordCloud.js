@@ -7,6 +7,10 @@ const {JSDOM}   = require('jsdom');
 
 const WIDTH  = 2000;
 const HEIGHT = 2000;
+const MAX_COUNTMAX = 5000; // この数値以上の最頻文字の出現数はクリップされてMAX_WORD_SIZEになる
+const MIN_COUNTMAX = 1000; // この数値以下の最頻文字の出現数はクリップされるMIN_WORD_SIZEになる
+const MAX_WORD_SIZE = 150;
+const MIN_WORD_SIZE = 140;
 
 let   document = new JSDOM ( // DOM生成
   `<body></body>`,
@@ -66,9 +70,10 @@ function _getWords(data) {
   //var countMin   = d3.min(arr_count);
   var countMax   = Math.max.apply(null, arr_count); // d3.maxの挙動がおかしいので
   var countMin   = Math.min.apply(null, arr_count); // d3.minの挙動がry
-  var f_range    = (x) => {return ((x+4000)/60)}; //countMax=2000の時100、countMax=5000の時150をとる
-  var rangeMax   = (f_range(countMax) < 100)? 100 :
-                   (f_range(countMax) < 150)? 150 : f_range(countMax); 
+  var tilt_range = ((MAX_WORD_SIZE-MIN_WORD_SIZE)/(MAX_COUNTMAX-MIN_COUNTMAX)); // 単語出現数とワードサイズの傾き
+  var f_range    = (x) => {return (tilt_range*x + (MIN_WORD_SIZE-tilt_range*MIN_COUNTMAX))};
+  var rangeMax   = (f_range(countMax) < MIN_WORD_SIZE)? MIN_WORD_SIZE :
+                   (f_range(countMax) < MAX_WORD_SIZE)? MAX_WORD_SIZE : f_range(countMax); 
   var sizeScale  = d3.scaleLog().domain([countMin, countMax]).range([10, rangeMax]).clamp(true); //ログスケール
   //var sizeScale  = d3.scaleLinear().domain([countMin, countMax]).range([20, 150]); //リニアスケール
   var colorScale = function(t){
