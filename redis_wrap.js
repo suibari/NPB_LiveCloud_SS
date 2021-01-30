@@ -48,8 +48,12 @@ module.exports.getTPS = function () {
   })
 };
 
-module.exports.init = function () {
-  redis.flushall().then(console.log("YUKI.N > successful to reflesh redis."));
+module.exports.initAndSetTimeStamp = function () {
+  redis.pipeline()
+    .flushall()
+    .set("last_changed_date", new Date())
+    .exec((err, res) => {console.log(res)})
+  console.log("YUKI.N > successful to reflesh redis, and set timestamp.");
 }
 
 // redisのresultを変換する関数
