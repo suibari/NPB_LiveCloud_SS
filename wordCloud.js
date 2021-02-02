@@ -10,7 +10,7 @@ const HEIGHT = 2000;
 const MAX_COUNTMAX = 5000; // この数値以上の最頻文字の出現数はクリップされてMAX_WORD_SIZEになる
 const MIN_COUNTMAX = 1000; // この数値以下の最頻文字の出現数はクリップされるMIN_WORD_SIZEになる
 const MAX_WORD_SIZE = 150;
-const MIN_WORD_SIZE = 140;
+const MIN_WORD_SIZE = 130;
 
 let   document = new JSDOM ( // DOM生成
   `<body></body>`,

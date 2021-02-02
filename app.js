@@ -48,8 +48,8 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => {
         
         // 2. 画像付きツイート
         const idx_first  = 0;
-        const idx_second = words.findIndex(word => (word.team != words[idx_first].team));
-        const idx_third  = words.findIndex(word => (word.team != words[idx_first].team) && (word.team != words[idx_second].team));
+        const idx_second = words.findIndex(word => (word.team != words[idx_first].team) && (word.word != words[idx_first].word));
+        const idx_third  = words.findIndex(word => (word.team != words[idx_first].team) && (word.word != words[idx_first].word) && (word.team != words[idx_second].team) && (word.word != words[idx_second].word));
         const now = new Date();
         redis_wrap.getTimeStamp().then((date_from_lastpost) => {
           const hour_from_lastpost = Math.floor((now - new Date(date_from_lastpost)) / (1000 * 60 * 60 )); // 現在時刻と最終投稿日の差をミリ秒で割ることで、最終投稿から何時間たったか を取得
