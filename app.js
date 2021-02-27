@@ -11,8 +11,10 @@ const SegfaultHandler = require('segfault-handler');
 SegfaultHandler.registerHandler('crash.log')
 require('date-utils');
 const redis_wrap = require('./redis_wrap.js')
+const request    = require('request');
 
 const WORDS_LENGTH = 300;
+const TOP_WORDS_LENGTH = 50;
 
 // ある時間にcron_botでWC生成＆ツイート
 //cron.schedule('*/30 * * * * *', () => { // 10秒おきに実行
@@ -67,7 +69,40 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH).then((words) => {
               console.log("YUKI.N >    successsful to post to Twitter.");
               redis_wrap.initAndSetTimeStamp();
               console.log("YUKI.N > =====================================");
-              process.exit(1);
+              
+              // 上位30個のワードを順番に
+              for (let i=0; i<TOP_WORDS_LENGTH; i++) {
+                // APIをたたく
+                request.get({
+                  uri: "https://npb-meikan.herokuapp.com/json?name=",
+                  headers: {'Content-type': 'application/json'},
+                  qs: {name: words[i].word},
+                  json: true
+                }, (err, response, body) => {
+                  if (response.statusCode == 200) {
+                    //ツイート文生成
+                    const stats_thisyear     = body.stats_2020;
+                    const txt_stats_thisyear = (stats_thisyear) ? 
+                                               ((body.position == "投手") ?
+                                                 ("試" + stats_thisyear.game + "/勝" + stats_thisyear.win + "/敗" + stats_thisyear.lose + "/S" + stats_thisyear.save +
+                                                 "/回" + stats_thisyear.inning + "/防" + stats_thisyear.era + "/WHIP:" + stats_thisyear.whip) :
+                                                 ("試" + stats_thisyear.game + "/打" + stats_thisyear.ab + "/安" + stats_thisyear.h + "/率" + stats_thisyear.avg + "/出" + stats_thisyear.obp + 
+                                                 "/本" + stats_thisyear.hr + "/点" + stats_thisyear.rbi + "/盗" + stats_thisyear.sb + "/OPS:" + stats_thisyear.ops)) :
+                                               ("今シーズン未出場");  
+                    const txt_player = "トレンドの選手情報です。\n\n"+
+                                        body.name + "(" + body.kana + ")\n"+
+                                        body.team + "\n"+
+                                        body.career + (body.draft_y ? (" (" + body.draft_y + ")") : "") + "\n"+
+                                        body.birthday + "生まれ (" + body.age + "歳)\n"+
+                                        "今年度成績: "+ txt_stats_thisyear + "\n"+
+                                        body.url + "\n\n" +
+                                        "@" + data.user.screen_name;
+                    console.log(txt_player);
+                    twit.post('statuses/update', {status: txt_player, in_reply_to_status_id: data.id_str});
+                  };
+                }) 
+              }
+              //process.exit(1);
             } else {
               console.error(err);
             }
