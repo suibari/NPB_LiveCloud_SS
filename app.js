@@ -73,41 +73,60 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH)
       twit.post('statuses/update', params, function (err, data, response) {
         if (!err) {
           console.log("YUKI.N >    successsful to post to Twitter.");
-          //redis_wrap.initAndSetTimeStamp();
           console.log("YUKI.N > =====================================");
+
+          // 引用ツイートのためURLを取得
+          const tweet_url = "https://twitter.com/" + data.user.screen_name + "/status/" + data.id_str;
           
-          // 上位30個のワードを順番に
+          // APIリクエスト&ツイートする関数を配列に格納
+          var tasks = [];
           for (let i=0; i<TOP_WORDS_LENGTH; i++) {
-            // APIをたたく
-            request.get({
-              uri: "https://npb-meikan.herokuapp.com/json?name=",
-              headers: {'Content-type': 'application/json'},
-              qs: {name: words[i].word},
-              json: true
-            }, (err, response, body) => {
-              console.log("YUKI.N > " + i + ", NPB-meikan API access status-code: " + response.statusCode);
-              if (response.statusCode == 200) {
-                //ツイート文生成
-                const stats_thisyear     = body.stats_2020;
-                const txt_stats_thisyear = (stats_thisyear) ? 
-                                           ((body.position == "投手") ?
-                                             ("試" + stats_thisyear.game + "/勝" + stats_thisyear.win + "/敗" + stats_thisyear.lose + "/S" + stats_thisyear.save +
-                                             "/回" + stats_thisyear.inning + "/防" + stats_thisyear.era + "/WHIP:" + stats_thisyear.whip) :
-                                             ("試" + stats_thisyear.game + "/打" + stats_thisyear.ab + "/安" + stats_thisyear.h + "/率" + stats_thisyear.avg + "/出" + stats_thisyear.obp + 
-                                             "/本" + stats_thisyear.hr + "/点" + stats_thisyear.rbi + "/盗" + stats_thisyear.sb + "/OPS:" + stats_thisyear.ops)) :
-                                           ("今シーズン未出場");  
-                const txt_player = "トレンドの選手情報です。\n\n"+
-                                    body.name + "(" + body.kana + ")\n"+
-                                    body.team + "\n"+
-                                    body.career + (body.draft_y ? (" (" + body.draft_y + ")") : "") + "\n"+
-                                    body.birthday + "生まれ (" + body.age + "歳)\n"+
-                                    "今年度成績: "+ txt_stats_thisyear + "\n"+
-                                    body.url;
-                console.log(txt_player);
-                twit.post('statuses/update', {status: txt_player});
-              };
-            }); //request
-          } //for
+            tasks.push(requestToApiAndPostTweet(i));
+          }
+          Promise.all(tasks).then(() => {
+            console.log("YUKI.N > posted all trend player's info.");
+            console.log("YUKI.N > app exit...");
+            redis_wrap.initAndSetTimeStamp();
+            process.exit(1);
+          })
+
+          // ---
+          function requestToApiAndPostTweet (index) {
+            return new Promise ((resolve, reject) => {
+              request.get({
+                uri: "https://npb-meikan.herokuapp.com/json?name=",
+                headers: {'Content-type': 'application/json'},
+                qs: {name: words[index].word},
+                json: true
+              }, (err, response, body) => {
+                console.log("YUKI.N > No." + index + ", word: " + words[index].word + " , NPB-meikan API access status-code: " + response.statusCode);
+                if (response.statusCode == 200) {
+                  //ツイート文生成
+                  const stats_thisyear     = body.stats_2020;
+                  const txt_stats_thisyear = (stats_thisyear) ? 
+                                             ((body.position == "投手") ?
+                                               ("試" + stats_thisyear.game + "/勝" + stats_thisyear.win + "/敗" + stats_thisyear.lose + "/S" + stats_thisyear.save +
+                                               "/回" + stats_thisyear.inning + "/防" + stats_thisyear.era + "/WHIP:" + stats_thisyear.whip) :
+                                               ("試" + stats_thisyear.game + "/打" + stats_thisyear.ab + "/安" + stats_thisyear.h + "/率" + stats_thisyear.avg + "/出" + stats_thisyear.obp + 
+                                               "/本" + stats_thisyear.hr + "/点" + stats_thisyear.rbi + "/盗" + stats_thisyear.sb + "/OPS:" + stats_thisyear.ops)) :
+                                             ("今シーズン未出場");  
+                  const txt_player =  "#" + words[index].team + " のトレンド選手情報です。(" + now.toFormat('YYYY/M/D HH24時MI分') + ")\n\n"+
+                                      body.name + "(" + body.kana + ")\n"+
+                                      //body.team + "\n"+
+                                      body.career + (body.draft_y ? (" (" + body.draft_y + ")") : "") + "\n"+
+                                      body.birthday + "生まれ (" + body.age + "歳)\n"+
+                                      "今年度成績: "+ txt_stats_thisyear + "\n"+
+                                      body.url;
+                  //console.log(txt_player);
+                  twit.post('statuses/update', {status: txt_player}, () => {
+                    console.log("YUKI.N > posted trend player info: " + words[index].word);
+                    resolve();
+                  });
+                } else {
+                  resolve();
+                };
+              }); //request
+            })}; //function
         }; //twit-if
       }) //twit(tweet)
     }); //redis
