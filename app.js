@@ -86,7 +86,11 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH)
           Promise.all(tasks).then(() => {
             console.log("YUKI.N > posted all trend player's info.");
             console.log("YUKI.N > app exit...");
+<<<<<<< HEAD
             redis_wrap.initAndSetTimeStamp();
+=======
+            //redis_wrap.initAndSetTimeStamp();
+>>>>>>> origin/dev
             process.exit(1);
           })
 
