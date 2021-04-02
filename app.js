@@ -102,7 +102,7 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH)
                 console.log("YUKI.N > No." + index + ", word: " + words[index].word + " , NPB-meikan API access status-code: " + response.statusCode);
                 if (response.statusCode == 200) {
                   //ツイート文生成
-                  const stats_thisyear     = body.stats_2020;
+                  const stats_thisyear     = body.stats_2021;
                   const txt_stats_thisyear = (stats_thisyear) ? 
                                              ((body.position == "投手") ?
                                                ("試" + stats_thisyear.game + "/勝" + stats_thisyear.win + "/敗" + stats_thisyear.lose + "/S" + stats_thisyear.save +
@@ -115,8 +115,9 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH)
                                       //body.team + "\n"+
                                       body.career + (body.draft_y ? (" (" + body.draft_y + ")") : "") + "\n"+
                                       body.birthday + "生まれ (" + body.age + "歳)\n"+
-                                      "今年度成績: "+ txt_stats_thisyear + "\n"+
-                                      body.url;
+                                      "2021年度成績: "+ txt_stats_thisyear + "\n"+
+                                      //body.url;
+                                      "選手名鑑LINEbot: " + "https://lin.ee/CqYJbKN";
                   //console.log(txt_player);
                   twit.post('statuses/update', {status: txt_player}, () => {
                     console.log("YUKI.N > posted trend player info: " + words[index].word);
