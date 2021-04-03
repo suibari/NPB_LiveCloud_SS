@@ -115,8 +115,9 @@ require('./redis_wrap.js').getCount("all", WORDS_LENGTH)
                                       //body.team + "\n"+
                                       body.career + (body.draft_y ? (" (" + body.draft_y + ")") : "") + "\n"+
                                       body.birthday + "生まれ (" + body.age + "歳)\n"+
-                                      "2021年度成績: "+ txt_stats_thisyear + "\n"+
-                                      //body.url;
+                                      "2021年度成績: "+ txt_stats_thisyear + "\n" +
+                                      "\n" +
+                                      body.url + "\n";
                                       "選手名鑑LINEbot: " + "https://lin.ee/CqYJbKN";
                   //console.log(txt_player);
                   twit.post('statuses/update', {status: txt_player}, () => {
